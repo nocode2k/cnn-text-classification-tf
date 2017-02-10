@@ -29,8 +29,12 @@ class MultiClassDataLoader(object):
         x_train, y_train = self.__load_data_and_labels(self.__train_data_file)
         x_dev, y_dev = self.__load_data_and_labels(self.__dev_data_file)
 
+        """
         max_doc_len = max([len(doc.decode("utf-8")) for doc in x_train])
         max_doc_len_dev = max([len(doc.decode("utf-8")) for doc in x_dev])
+        """
+        max_doc_len = max([len(doc) for doc in x_train])
+        max_doc_len_dev = max([len(doc) for doc in x_dev])
         if max_doc_len_dev > max_doc_len:
             max_doc_len = max_doc_len_dev
         # Build vocabulary
@@ -65,7 +69,7 @@ class MultiClassDataLoader(object):
     def __load_data_and_labels(self, data_file):
         x_text = []
         y = []
-        with open(data_file, 'r') as tsvin:
+        with open(data_file, 'r', encoding='UTF8') as tsvin:
             classes = self.__classes()
             one_hot_vectors = np.eye(len(classes), dtype=int)
             class_vectors = {}
@@ -81,7 +85,7 @@ class MultiClassDataLoader(object):
     def __classes(self):
         self.__resolve_params()
         if self.__classes_cache is None:
-            with open(self.__class_data_file, 'r') as catin:
+            with open(self.__class_data_file, 'r', encoding='UTF8') as catin:
                 classes = list(catin.readlines())
                 self.__classes_cache = [s.strip() for s in classes]
         return self.__classes_cache
